@@ -190,6 +190,101 @@ export default {
 ...
 ```
 2:26 Add CSS class to HTML tag.
+```
+...
+  <div
+    v-for="t in tickers"
+    :key="t.name"
+    @click="select(t)"
+    :class="{
+      'border-4': sel === t
+    }"
+    // :class="sel === t ? 'border-4' : ''"
+...
+```
+5:01 prevent a default bottom behavior (event) stop propagation
+```
+...
+  <button
+    @click.stop="handleDelete(t)"
+...
+```
+6:25 Get CryptoCompare API
+4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4
+7:06 Add Fetch from API
+```
+...
+  setInterval(async () => {
+    const f = await fetch(
+      `https://min-api.cryptocompare.com/data/price?fsym=${currentTicker.name}&tsyms=USD&api_key=4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4`
+    );
+    const data = await f.json();
+
+    // currentTicker.price =  data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2);
+    this.tickers.find(t => t.name === currentTicker.name).price =
+      data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2);
+
+    if (this.sel?.name === currentTicker.name) {
+      this.graph.push(data.USD);
+    }
+  }, 5000);
+...
+```
+11:52 Add Graph
+```
+...
+<script>
+export default {
+  name: "App",
+
+  data() {
+    return {
+      ticker: "",
+      tickers: [],
+      sel: null,
+      graph: []
+    };
+  },
+...
+
+        if (this.sel?.name === currentTicker.name) {
+          this.graph.push(data.USD);
+        }
+        ...
+``` 
+13:45 Show graph
+
+17:06 Create function 
+```
+...
+  normalizeGraph() {
+    const maxValue = Math.max(...this.graph);
+    const minValue = Math.min(...this.graph);
+    return this.graph.map(
+      price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
+    );
+  }
+...
+```
+21:58 Clean graph
+```
+...
+  <div
+    v-for="t in tickers"
+    :key="t.name"
+    @click="select(t)"
+...
+select(ticker) {
+  this.sel = ticker;
+  this.graph = [];
+},
+...
+```
+
+
+
+
+
 
 
 
