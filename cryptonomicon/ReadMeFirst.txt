@@ -280,12 +280,58 @@ select(ticker) {
 },
 ...
 ```
+----------------------------------------------------
+https://youtu.be/p5y4lPbYee4?si=84rcdhS4slW5nFQ0
 
+4:04 Add tailwind Package
+vue-cli-plugin-tailwind
+https://www.npmjs.com/package/vue-cli-plugin-tailwind
+```
+npx @vue/cli add tailwind
+>minimal
+```
 
+5:38 Add tailwind Form Package
+https://github.com/tailwindlabs/tailwindcss-forms
+```
+npm install -D @tailwindcss/forms
+```
 
+Then add the plugin to your tailwind.config.js file:
+```
+// tailwind.config.js
+module.exports = {
+  theme: {
+    // ...
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    // ...
+  ],
+}
+```
+6:33 activate tailwind
+https://tailwindcss.com/
+https://tailwindcss.com/docs/installation
+7:26 Add to app.css
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+7:34 Run app
+```
+npm run serve
+```
 
+9:34
+`npm run build`
 
-
-
-
-
+10:40 Add 'Tailwind CSS IntelliSense' plugin
+12:09 replace tailwind in app.css
+```
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+```
+15:14 Delete app.css and from style of App.vue
