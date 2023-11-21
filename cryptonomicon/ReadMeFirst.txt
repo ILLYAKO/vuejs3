@@ -335,3 +335,4 @@ npm run serve
 @import "tailwindcss/utilities";
 ```
 15:14 Delete app.css and from style of App.vue
+#15
