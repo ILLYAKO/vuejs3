@@ -512,7 +512,7 @@ subscribeToUpdates(tickerName) {
 ```
 21:49 Erase fliter conten and go to the first page
 ```
- <div>Filter: <input v-model="filter" @input="filter=''" /> </div>
+ <div>Filter: <input v-model="filter" @input="page=1" /> </div>
 ```
 23:20 watch what watch for variable filter
 ```
@@ -568,6 +568,12 @@ https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
   },
   ...
 ```
+--------------------------------------------------------------------
+https://www.youtube.com/live/_esgbWGiP3c?si=TJZO-up0ZwJrJon9
+#17 Криптономикон: рефакторинг - Vue.js: практика
+
+34:21 computed. Vue saves results of computed in the cash and recompute when inner parameter were changed 
+
 
 
 
