@@ -335,3 +335,63 @@ npm run serve
 @import "tailwindcss/utilities";
 ```
 15:14 Delete app.css and from style of App.vue
+----------------------------------------------------------
+https://youtu.be/BNDo6MVbPn4?si=3q-4dusjuJ1l-JeH
+JavaScript.Ninja
+#16 Криптономикон-5: Работа со списком - Vue.js: практика
+
+0:46 Save data in local storage
+```
+  methods: {
+    add() {
+      const currentTicker = {
+        name: this.ticker,
+        price: "-"
+      };
+      this.tickers.push(currentTicker);
+
+      localStorage.setItem('cryptonomicon-list', JSON.stringify(this.tickers));
+      this.subscribeToUpdates(currentTicker.name);
+      ...
+    }
+  }
+
+1:22 Load data from localStorage
+```
+<script>
+export default {
+...
+  created() {
+    const tickersData = localStorage.getItem('cryptonomicon-list');
+    if(tickersData) {
+      this.tickers = JSON.parse(tickersData);
+      this.tickers.forEach(ticker => this.subscribeToUpdates(ticker.name))
+    }
+  },
+...
+}
+```
+
+3:05 Create new method subscribeToUpdates
+```
+...
+subscribeToUpdates(tickerName) {
+  setInterval(async () => {
+    const f = await fetch(
+      `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD&api_key=4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4`
+    );
+    const data = await f.json();
+
+    // currentTicker.price =  data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2);
+    this.tickers.find(t => t.name === tickerName).price =
+      data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2);
+
+    if (this.sel?.name === tickerName) {
+      this.graph.push(data.USD);
+    }
+  }, 5000);
+  
+  this.ticker = "";
+},
+...
+```
