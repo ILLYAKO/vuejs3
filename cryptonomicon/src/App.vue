@@ -1,43 +1,24 @@
 <template>
   <div class="container mx-auto flex flex-col items-center bg-gray-100 p-4">
-    <!-- <div class="fixed w-100 h-100 opacity-80 bg-purple-800 inset-0 z-50 flex items-center justify-center">
-      <svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    </div> -->
-
     <div class="container">
-      
+      <div class="w-full my-4"></div>
       <section>
         <div class="flex">
           <div class="max-w-xs">
             <label for="wallet" class="block text-sm font-medium text-gray-700"
-              >Ticker:</label
+              >Тикер</label
             >
             <div class="mt-1 relative rounded-md shadow-md">
               <input
                 v-model="ticker"
-                @input="handleInput($event.target.value)"
                 @keydown.enter="add"
                 type="text"
                 name="wallet"
                 id="wallet"
                 class="block w-full pr-10 border-gray-300 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
-                placeholder="Example DOGE"
-              />              
+                placeholder="Например DOGE"
+              />
             </div>
-            <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
-              <span 
-                v-for="sTicker in suggestTickers" 
-                :key="sTicker" 
-                @click="handleSuggestionClick(sTicker)"
-                class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-                {{ sTicker }}
-              </span>
-          </div>
-          <div v-if="isTickerExist" class="text-sm text-red-600">This ticker exists.</div>
-
           </div>
         </div>
         <button
@@ -58,7 +39,7 @@
               d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
             ></path>
           </svg>
-          Add
+          Добавить
         </button>
       </section>
 
@@ -99,7 +80,7 @@
                   d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                   clip-rule="evenodd"
                 ></path></svg
-              >Remove
+              >Удалить
             </button>
           </div>
         </dl>
@@ -157,16 +138,13 @@ export default {
     return {
       ticker: "",
       tickers: [],
-      allTickerNames: [],
-      suggestTickers: [],
       sel: null,
-      graph: [],
-      isTickerExist: false
+      graph: []
     };
   },
 
   methods: {
-    add() {      
+    add() {
       const currentTicker = {
         name: this.ticker,
         price: "-"
@@ -187,10 +165,7 @@ export default {
           this.graph.push(data.USD);
         }
       }, 5000);
-
       this.ticker = "";
-      this.suggestTickers = []
-      this.isTickerExist  = false
     },
 
     select(ticker) {
@@ -208,26 +183,9 @@ export default {
       return this.graph.map(
         price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       );
-    },
-
-    handleInput(symbol){
-      this.suggestTickers = this.allTickerNames
-                                              .filter(element => element.includes(symbol.toUpperCase()))
-                                              .slice(0,4);
-    },
-
-    handleSuggestionClick(sTicker) {
-      this.ticker = sTicker;
-      this.add();
     }
-  },
-
-  async mounted() {
-    const fetchAllTicker = await fetch(
-        `https://min-api.cryptocompare.com/data/blockchain/list?api_key=4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4`
-      );
-    const fetchedResponse = await fetchAllTicker.json();
-    this.allTickerNames = Object.keys(fetchedResponse.Data);
-  },
+  }
 };
 </script>
+
+
