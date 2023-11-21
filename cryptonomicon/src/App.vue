@@ -6,7 +6,7 @@
         <div class="flex">
           <div class="max-w-xs">
             <label for="wallet" class="block text-sm font-medium text-gray-700"
-              >Тикер</label
+              >Ticker</label
             >
             <div class="mt-1 relative rounded-md shadow-md">
               <input
@@ -16,7 +16,7 @@
                 name="wallet"
                 id="wallet"
                 class="block w-full pr-10 border-gray-300 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
-                placeholder="Например DOGE"
+                placeholder="Ex. DOGE"
               />
             </div>
           </div>
@@ -39,15 +39,35 @@
               d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
             ></path>
           </svg>
-          Добавить
+          Add
         </button>
       </section>
 
       <template v-if="tickers.length">
         <hr class="w-full border-t border-gray-600 my-4" />
+        <div>
+          <button
+            type="button"
+            class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            v-if="page > 1"
+            @click="page = page - 1"
+            >
+              Back
+          </button>
+          <button
+            type="button"
+            class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            @click="page = page + 1"
+            v-if="hasNextPage"
+            >
+              Forward
+          </button>
+          <div>Filter: <input v-model="filter" @input="filter=''" /> </div>
+        </div>
+        <hr class="w-full border-t border-gray-600 my-4" />
         <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div
-            v-for="t in tickers"
+            v-for="t in filteredTickers()"
             :key="t.name"
             @click="select(t)"
             :class="{
@@ -80,7 +100,7 @@
                   d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                   clip-rule="evenodd"
                 ></path></svg
-              >Удалить
+              >Remove
             </button>
           </div>
         </dl>
@@ -139,11 +159,23 @@ export default {
       ticker: "",
       tickers: [],
       sel: null,
-      graph: []
+      graph: [],
+      page: 1,
+      filter: '',
+      hasNextPage: true,
     };
   },
 
   created() {
+    const windowData = Object.fromEntries(
+      new URL(window.location).searchParams.entries()
+    );
+    if(windowData.filter) {
+      this.filter = windowData.filter;
+    }
+    if(windowData.page) {
+      this.page = windowData.page;
+    }
     const tickersData = localStorage.getItem('cryptonomicon-list');
     if(tickersData) {
       this.tickers = JSON.parse(tickersData);
@@ -152,6 +184,19 @@ export default {
   },
 
   methods: {
+
+    filteredTickers() {
+      const start = (this.page - 1) * 6;
+      const end = this.page * 6;
+
+      const filteredTickers = this.tickers
+        .filter(ticker => ticker.name.includes(this.filter));
+
+      this.hasNextPage = filteredTickers.length > end;
+
+      return filteredTickers.slice(start, end);
+    },
+
     subscribeToUpdates(tickerName) {
       setInterval(async () => {
         const f = await fetch(
@@ -178,6 +223,7 @@ export default {
       };
 
       this.tickers.push(currentTicker);
+      this.filter = '';
 
       localStorage.setItem('cryptonomicon-list', JSON.stringify(this.tickers));
 
@@ -200,6 +246,23 @@ export default {
         price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       );
     }
+  },
+  watch: {
+    filter() {
+      this.page = 1;
+      window.history.pushState(
+        null,
+        document.title,
+        `${window.location.pathname}?filter=${this.filter}&page${this.page}`
+      );
+    },
+    page() {
+      window.history.pushState(
+        null,
+        document.title,
+        `${window.location.pathname}?filter=${this.filter}&page${this.page}`
+      );
+    },
   }
 };
 </script>

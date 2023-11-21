@@ -395,3 +395,181 @@ subscribeToUpdates(tickerName) {
 },
 ...
 ```
+6:58 Add filter in app.vue
+```
+<template v-if="tickers.length">
+  <hr class="w-full border-t border-gray-600 my-4" />
+  <div>
+    <button
+      type="button"
+      class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+      >
+        Back
+    </button>
+    <button
+      type="button"
+      class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+      >
+        Forward
+    </button>
+    <div>Filter: <input type="text" /> </div>
+  </div>
+  ...
+  ```
+10:12 Pagination
+
+11:40 add function filteredTickers
+```
+...
+          <div
+            v-for="t in filteredTickers()"
+            ...
+            ```()
+  ```
+  ...
+    methods: {
+    filteredTickers
+  ```
+  ...
+            <div
+            v-for="t in filteredTickers()"
+            ...
+            ```() {
+      return this.tickers.filter(ticker => ticker.name.includes(this.filter));
+    },
+  ...
+  }
+  ```
+12:26 Return to template the filteredTickers
+```
+...
+  <div
+    v-for="t in filteredTickers()"
+...
+```
+14:49 Pagination
+```
+  methods: {
+
+    filteredTickers() {
+      const start = (this.page - 1) * 6;
+      const end = this.page * 6;
+      return this.tickers
+        .filter(ticker => ticker.name.includes(this.filter))
+        .slice(start, end);
+    },
+    ...
+  }
+```
+17:35 Add button action on click of forward and Back
+```
+  <button
+    type="button"
+    class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+    @click="page = page - 1"
+    >
+      Back
+  </button>
+  <button
+    type="button"
+    class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+    @click="page = page + 1"
+
+    >
+      Forward
+  </button>
+```
+18:54 Add hasNextPage in data()
+```
+  data() {
+    return {
+...
+      hasNextPage: true,
+```
+20:12 change filteredTickers ()
+```
+  methods: {
+    filteredTickers() {
+      const start = (this.page - 1) * 6;
+      const end = this.page * 6;
+      const filteredTickers = this.tickers
+        .filter(ticker => ticker.name.includes(this.filter));
+      this.hasNextPage = filteredTickers.length > end;
+      return filteredTickers.slice(start, end);
+    },
+...
+```  
+20:52 Add condition to forward button
+```
+          <button
+            type="button"
+            class="my-4 mx-2 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            @click="page = page + 1"
+            v-if="hasNextPage"
+            >
+              Forward
+          </button>
+```
+21:49 Erase fliter conten and go to the first page
+```
+ <div>Filter: <input v-model="filter" @input="filter=''" /> </div>
+```
+23:20 watch what watch for variable filter
+```
+...
+  watch: {
+    filter() {
+      this.page = 1;
+    }
+  }
+};
+</script>
+```
+24:16 History.pushState()
+https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
+```
+...
+  watch: {
+    filter() {
+      this.page = 1;
+      window.history.pushState(
+        null,
+        document.title,
+        `${window.location.pathname}?filter=${this.filter}&page${this.page}`
+      );
+    },
+    page() {
+      window.history.pushState(
+        null,
+        document.title,
+        `${window.location.pathname}?filter=${this.filter}&page${this.page}`
+      );
+    },
+  }
+```
+28:31 Read from windowData
+```
+...
+  created() {
+    const windowData = Object.fromEntries(
+      new URL(window.location).searchParams.entries()
+    );
+    if(windowData.filter) {
+      this.filter = windowData.filter;
+    }
+    if(windowData.page) {
+      this.page = windowData.page;
+    }
+    const tickersData = localStorage.getItem('cryptonomicon-list');
+    if(tickersData) {
+      this.tickers = JSON.parse(tickersData);
+      this.tickers.forEach(ticker => this.subscribeToUpdates(ticker.name))
+    }
+  },
+  ...
+```
+
+
+
+
+
