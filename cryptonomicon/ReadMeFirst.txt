@@ -618,3 +618,4 @@ export const unsubscribeToTicker = (ticker, cb) => {
 ```
 59:25 Add subscribe to ticker in App.vue
 1:10:20 add function updateTicker to methods in App.vue
+1:16:50 Websocket
