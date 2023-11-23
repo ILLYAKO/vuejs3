@@ -618,4 +618,52 @@ export const unsubscribeToTicker = (ticker, cb) => {
 ```
 59:25 Add subscribe to ticker in App.vue
 1:10:20 add function updateTicker to methods in App.vue
-1:16:50 Websocket
+1:16:50 Websocket 
+https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+https://min-api.cryptocompare.com/documentation/websockets
+1:18:55 Browser console:
+const socket =new WebSocket('wss://streamer.cryptocompare.com/v2?api_key=4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4')
+
+1:19:04 Browser -> Network -> WS
+1:20:32 Sent socket request
+1:22:07 Browser-> console
+socket.send(JSON.stringify({
+  "action": "SubAdd",
+  subs: ["5~CCCAGG~BTC~USD"]
+  }))
+1:23:10 Create socket in app.js
+const socket = new WebSocket(
+    `wss://streamer.cryptocompare.com/v2?api_key=${API_KEY}`
+);
+
+1:24:09 Create function in app.js
+function subscribeToTickerOnWs(ticker) {
+    socket.send(
+        JSON.stringify({
+            action: "SubAdd",
+            subs: [`5~CCCAGG~${ticker}~USD`],
+        })
+    );
+}
+
+1:24:47 Add event listener of websocket
+function subscribeToTickerOnWs(ticker) {
+    const message = JSON.stringify({
+        action: "SubAdd",
+        subs: [`5~CCCAGG~${ticker}~USD`],
+    });
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        return;
+    }
+    socket.addEventListener(
+        "open",
+        () => {
+            socket.send(message);
+        },
+        { once: true }
+    );
+}
+
+1:31:59 Remove Ticker
+
