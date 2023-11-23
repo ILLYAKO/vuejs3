@@ -574,8 +574,47 @@ https://www.youtube.com/live/_esgbWGiP3c?si=TJZO-up0ZwJrJon9
 
 34:21 computed. Vue saves results of computed in the cash and recompute when inner parameter were changed 
 
+https://www.youtube.com/live/AzsO67rloQw?si=NvqyC32ybQoPdFEt
+#18 Криптономикон: рефакторинг - Vue.js: практика
 
+20:43 Create scr/app.js - transport layer
+```
+const API_KEY ='4831e2c2a4a31f4e1367161035dabbe1147ae8af2b4fc4e3eae9dc988038eef4';
 
+// TODO: refactor to use URLSearchParams
+export const loadTicker = tickerName =>
+fetch(
+    `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD&api_key=${API_KEY}`
+    ).then(res => res.json());
+```
+22:23 aff import of app.js to App.vue
+```
+import { loadTicker } from './app';
+...
+  methods: {
+    subscribeToUpdates(tickerName) {
 
+      setInterval(async () => {
+        const ticker = loadTicker(tickerName);
+...
+```
+47:29 Websocket
+49:56 Subscription to Websocket in app.js
+```
+...
+export const subscribeToTicker = (ticker, cb) => {
+    const subscribers = tickers.get(ticker) || [];
+    tickers.set(ticker, [...subscribers, cb])
+};
 
-
+export const unsubscribeToTicker = (ticker, cb) => {
+    const subscribers = tickers.get(ticker) || [];
+    tickers.set(
+        ticker,
+        [...subscribers, subscribers.filter(fn => fn != cb)]
+    );
+};
+...
+```
+59:25 Add subscribe to ticker in App.vue
+1:10:20 add function updateTicker to methods in App.vue
