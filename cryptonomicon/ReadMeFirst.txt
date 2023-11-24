@@ -666,6 +666,63 @@ function subscribeToTickerOnWs(ticker) {
 }
 
 1:31:59 Remove Ticker
+---------------------------------------------
+https://youtu.be/uWDmfA7WE5Q?si=npU-R8YlcP3mLZPC
+#22 Криптономикон: refs - Vue.js: практика
+2:53 Ref is an opportunity to get a link to the object(DOM node) that we drawn in the template
+Ref is not reacted.
+```
+  <div
+      class="flex items-end border-gray-600 border-b border-l h-64"
+      ref="graph"
+  >
+```
+```
+...
+    methods: {
+        updateTicker(tickerName, price) {
+            console.log("updateTicker: ", this.$refs.graph);
+...
+```
+-------------------------------------------------------
+https://youtu.be/zluGw3aJAMs?si=lVaB07VHfXQcHn8_
+#23 nextTick - Vue.js: нюансы
+nextTick we use than we need to wait for renew the DOM in response to our actions.
+```
+...
+    watch: {
+        selectedTicker() {
+            this.graph = [];
+            this.$nextTick().then(this.calculateMaxGraphElements);
+        },
+...
+```
+------------------------------------------------------------
+https://youtu.be/Ql5nV-G-nOs?si=6jr2VOGzOX8IBeRc
+#24 Криптономикон: компоненты - Vue.js: практика
 
-1:55:00
+2:54 Create directory src/components and file PlusSign.vue
+3:49 Import component
+```
+<script>
+import PlusSignIcon from "./components/PlusSignIcon.vue";
+
+export default {
+    name: "App",
+
+    components: {
+        PlusSignIcon,
+    },
+...
+}
+```
+5:20 Create component in HTML stile. the component name should have 2 words and more.
+Put a dash between the words.
+```
+<template>
+...
+  <plus-sign-icon />
+...
+</template>
+
 

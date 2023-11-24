@@ -28,19 +28,7 @@
                     type="button"
                     class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 >
-                    <!-- Heroicon name: solid/mail -->
-                    <svg
-                        class="-ml-0.5 mr-2 h-6 w-6"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="30"
-                        height="30"
-                        viewBox="0 0 24 24"
-                        fill="#ffffff"
-                    >
-                        <path
-                            d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                        ></path>
-                    </svg>
+                <plus-sign-icon />
                     Add
                 </button>
             </section>
@@ -120,6 +108,7 @@
                 </h3>
                 <div
                     class="flex items-end border-gray-600 border-b border-l h-64"
+                    ref="graph"
                 >
                     <div
                         v-for="(bar, idx) in normalizedGraph"
@@ -167,8 +156,14 @@ import {
     unsubscribeToTicker,
 } from "./app";
 
+import PlusSignIcon from "./components/PlusSignIcon.vue";
+
 export default {
     name: "App",
+
+    components: {
+        PlusSignIcon,
+    },
 
     data() {
         return {
@@ -176,8 +171,10 @@ export default {
             tickers: [],
             selectedTicker: null,
             graph: [],
+            maxGraphElements: 1,
             page: 1,
             filter: "",
+
             // hasNextPage: true,
         };
     },
@@ -213,6 +210,14 @@ export default {
         }
 
         setInterval(this.updateTickers, 5000);
+    },
+
+    mounted() {
+        window.addEventListener("resize", this.calculateMaxGraphElements);
+    },
+
+    beforeUnmount() {
+        window.removeEventListener("resize", this.calculateMaxGraphElements);
     },
 
     computed: {
@@ -258,12 +263,23 @@ export default {
     },
 
     methods: {
+        calculateMaxGraphElements() {
+            if (!this.$refs.graph) {
+                return;
+            }
+            this.maxGraphElements = this.$refs.graph.clientWidth / 38;
+        },
+
         updateTicker(tickerName, price) {
+            console.log("updateTicker: ", this.$refs.graph);
             this.tickers
                 .filter((t) => t.name === tickerName)
                 .forEach((t) => {
                     if (t === this.selectedTicker) {
                         this.graph.push(price);
+                        while (this.graph.length > this.maxGraphElements) {
+                            this.graph.shift();
+                        }
                     }
                     t.price = price;
                 });
@@ -318,6 +334,7 @@ export default {
     watch: {
         selectedTicker() {
             this.graph = [];
+            this.$nextTick().then(this.calculateMaxGraphElements);
         },
         tickers() {
             localStorage.setItem(
