@@ -667,3 +667,5 @@ function subscribeToTickerOnWs(ticker) {
 
 1:31:59 Remove Ticker
 
+1:55:00
+
