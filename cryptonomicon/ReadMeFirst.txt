@@ -510,7 +510,7 @@ subscribeToUpdates(tickerName) {
               Forward
           </button>
 ```
-21:49 Erase fliter conten and go to the first page
+21:49 Erase filter content and go to the first page
 ```
  <div>Filter: <input v-model="filter" @input="page=1" /> </div>
 ```
@@ -724,5 +724,94 @@ Put a dash between the words.
   <plus-sign-icon />
 ...
 </template>
+
+10:24 Create new block as component AddTicker.vue
+
+13:50 Emit event in AddTicker.vue with data
+14:19 method $emit in child component
+```
+...
+methods: {
+    add() {
+        this.$emit("add-ticker", this.ticker);
+        this.ticker = "";
+    },
+},
+...
+```
+15:10 Catch an emitted event in parent component App.vue and get data emitted from child component
+```
+...
+ <add-ticker @add-ticker="add" />
+...
+```
+15:55  get data emitted from child component
+```
+...
+methods: {
+  ...  
+    add(ticker) {
+        const currentTicker = {
+            name: ticker,
+            price: "-",
+        };
+        ...
+    }
+}
+...
+```
+16:51 Transfer data from parent App.vue to child component
+```
+<add-ticker @add-ticker="add" :disabled="tooManyTickersAdded" />
+...
+  computed: {
+      tooManyTickersAdded() {
+          return this.tickers.length > 4;
+      },
+      ...
+  }
+```
+18:38 Get props in child component AddTicker.vue
+the props is available in "this."
+```
+...
+<script>
+import AddButton from "./AddButton.vue";
+
+export default {
+    components: { AddButton },
+    props: {
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+    },
+}
+...
+```
+23:17 vue3 emit fields. 
+We can check what child component emits to parent component.
+```
+...
+<script>
+export default {
+  ...
+    emits: {
+        "add-ticker": (value) => typeof value === "string",
+    },
+    ...
+}
+...
+```
+---------------------------------------------------------
+https://youtu.be/0Uv9DkaYquk?si=bxr31vgCEE5Cse1l
+#25 Нативные события - Vue.js: нюансы
+-------------------------------------------------------
+https://youtu.be/prIBI_ykIPo?si=r-cV6d5pqVp45YtK
+#26 Всплытие событий - Vue.js: нюансы
+
+
+
 
 
