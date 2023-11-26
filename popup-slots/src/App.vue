@@ -1,17 +1,13 @@
 <template>
-  <button @click="openPopup">Открыть окно</button>
-  <Popup
-    :is-open="isPopupOpen"
-    @ok="popupConfirmed"
-    @close="isPopupOpen = false"
-  >
+  <button @click="learnVue">Изучить Vue</button>
+  <Popup ref="confirmationPopup">
     Вы действительно хотите освоить правильные подходы к проектированию систем
     во Vue?
     <template #actions="{ confirm }">
       Напишите
       <input :placeholder="$options.CONFIRMATION_TEXT" v-model="confirmation" />
       &nbsp;
-      <button @click="confirm" :disabled="!isConfirmationCorrect">OK</button>
+      <button @click="confirm" :disabled="isConfirmationCorrect">OK</button>
     </template>
   </Popup>
 </template>
@@ -21,7 +17,7 @@ import Popup from "./components/MyPopup.vue";
 export default {
   components: { Popup },
   data() {
-    return { isPopupOpen: false, confirmation: "" };
+    return { confirmation: "" };
   },
 
   CONFIRMATION_TEXT: "ПОДТВЕРЖДАЮ",
@@ -33,14 +29,14 @@ export default {
   },
 
   methods: {
-    openPopup() {
+    async learnVue() {
       this.confirmation = "";
-      this.isPopupOpen = true;
-    },
 
-    popupConfirmed() {
-      alert("Confirmed!");
-      this.isPopupOpen = false;
+      const popupResult = await this.$refs.confirmationPopup.open();
+
+      if (popupResult) {
+        alert("Confirmed!");
+      }
     },
   },
 };

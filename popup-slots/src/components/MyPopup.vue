@@ -18,15 +18,10 @@
 
 <script>
 export default {
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: {
-    ok: null,
-    close: null,
+  currentPopupController: null,
+
+  data() {
+    return { isOpen: false };
   },
 
   mounted() {
@@ -43,11 +38,28 @@ export default {
       }
     },
 
-    close() {
-      this.$emit("close");
+    open() {
+      let resolve;
+      let reject;
+      const popupPromise = new Promise((ok, fail) => {
+        resolve = ok;
+        reject = fail;
+      });
+
+      this.$options.popupController = { resolve, reject };
+      this.isOpen = true;
+
+      return popupPromise;
     },
+
     confirm() {
-      this.$emit("ok");
+      this.$options.popupController.resolve(true);
+      this.isOpen = false;
+    },
+
+    close() {
+      this.$options.popupController.resolve(false);
+      this.isOpen = false;
     },
   },
 };
